@@ -1,1 +1,8 @@
+Andmed ja informatsioon - данные и информация
+Andmed - see on töödeldud  informatsioon
+Haldus - Администривание / обслуживание 
+Andmebaaside haldusssüsteemid - системы администрирования базы данных
+MS SQL Server , Oracle, mariaDB/phpMyadmin, Access.
+
+-------------------------------------------------------------
 
