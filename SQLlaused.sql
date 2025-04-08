@@ -1,18 +1,18 @@
 --kommentaar 
---SQL SERVER Managment Stuudio 
+--Xampp Managment Stuudio 
 --Conect TO:
---Server Name: (localdb)\MSSQLLocalDB
+--Server Name: 127.0.0.1
 -- Authentification 2 tüüpi:
---1. Windows Auth - Localdb admini õigused
---2. SQL Server Authentification - kontrollida varem tehtud kasutajad
+-- kasutaja: root
+-- parool: ei ole 
 
 CREATE DATABASE DanikLOGITvp23;
 USE DanikLOGITvp23;
 
 --tabeli loomine
---identity(1,1) - ise täidab tabeli 1,2,3,...
+--AUTO_INCREMENT - ise täidab tabeli 1,2,3,...
 CREATE TABLE inimene(
-inimineID int Primary Key identity (1,1),
+inimineID int Primary Key AUTO_INCREMENT,
 nimi varchar(50) unique,
 synniaeg date,
 telefon char(12),
@@ -38,7 +38,7 @@ VALUES
 SELECT * FROM inimene;
 
 CREATE TABLE elukoht(
-elukohtID int PRIMARY KEY identity (1,1),
+elukohtID int PRIMARY KEY AUTO_INCREMENT,
 elukoht varchar(50) UNIQUE,
 maakond varchar(50)
 );
@@ -80,7 +80,7 @@ ON inimene.elukohtID=elukoht.elukohtID;
 SELECT * FROM inimene;
 
 CREATE TABLE autod(
-autoID int PRIMARY KEY identity (1,1),
+autoID int PRIMARY KEY AUTO_INCREMENT,
 autoNR varchar(50) UNIQUE,
 mudell varchar(50),
 mark varchar(50),
