@@ -37,6 +37,76 @@ VALUES
 
 SELECT * FROM inimene;
 
---kustuta id=1
-DELETE FROM * inimine;
-WHERE inimeneID=1
+CREATE TABLE elukoht(
+elukohtID int PRIMARY KEY identity (1,1),
+elukoht varchar(50) UNIQUE,
+maakond varchar(50)
+);
+SELECT * FROM elukoht;
+--andmete lisamine tabeli elukoht
+INSERT INTO elukoht(elukoht, maakond)
+VALUES ('Tartu', 'Tartumaa'),
+('Pärnu', 'Pärnumaa');
+
+--tabeli muutmine uue veergu lisamine
+ALTER TABLE inimene ADD elukohtID int
+SELECT * FROM inimene;
+--foreign key lisamine
+ALTER TABLE inimene 
+ADD Constraint fk_elukoht
+FOREIGN KEY(elukohtID) 
+references elukoht(elukohtID);
+
+SELECT * FROM inimene;
+SELECT * FROM elukoht;
+
+INSERT INTO inimene
+(nimi, synniaeg, telefon, pikkus, opilaskodu, elukohtID)
+VALUES
+('Andrei Mäk', '2020-10-1', '2342444', 95.5, 9,1);
+
+SELECT * FROM inimene join elukoht
+ON inimene.elukohtID=elukoht.elukohtID;
+
+SELECT inimene.nimi, inimene.synniaeg, elukoht.elukoht
+FROM inimene join elukoht
+ON inimene.elukohtID=elukoht.elukohtID;
+
+
+SELECT i.nimi, i.synniaeg, e.elukoht
+FROM inimene i join elukoht
+ON inimene.elukohtID=elukoht.elukohtID;
+
+SELECT * FROM inimene;
+
+CREATE TABLE autod(
+autoID int PRIMARY KEY identity (1,1),
+autoNR varchar(50) UNIQUE,
+mudell varchar(50),
+mark varchar(50),
+vaasta date
+);
+
+DROP TABLE auto;
+
+INSERT INTO autod
+(autoNR, mudell, mark, vaasta)
+VALUES 
+('MXN123', 'Juke', 'Nissan', '2023-11-10'),
+('MXN456', 'Patrol', 'Nissan', '2021-11-10'),
+('GTR777', 'GTR', 'Nissan', '2024-11-10');
+
+SELECT * FROM autod;
+
+ALTER TABLE inimene ADD autoID int;
+SELECT * FROM inimene;
+
+ALTER TABLE inimene
+ADD Constraint fk_autod
+FOREIGN KEY (autoID)
+references autod(autoID);
+
+INSERT INTO inimene
+(nimi,synniaeg, telefon, pikkus, opilaskodu, elukohtID, autoID)
+VALUES
+('Danik Ivanov', '2000-5-12', '2353252' , 91.5, 0, 1, 1);
