@@ -110,3 +110,36 @@ INSERT INTO inimene
 (nimi,synniaeg, telefon, pikkus, opilaskodu, elukohtID, autoID)
 VALUES
 ('Danik Ivanov', '2000-5-12', '2353252' , 91.5, 0, 1, 1);
+
+------------------------------------------------
+
+CREATE DATABASE proceduurLOGITpv23;
+use proceduurLOGITpv23;
+
+CREATE TABLE filmid(
+filmID int primary key identity(1,1),
+filNimi varchar(30) unique,
+filmPikkus int,
+rezisoor varchar(30)
+);
+
+SELECT * FROM filmid;
+
+INSERT INTO filmid(filNimi, filmPikkus, rezisoor)
+VALUES ('Minecraft', 120, 'Jared Hess');
+
+--Protseduur, mis lisab uus film ja kohe näitab tabelis (INSERT, SELECT)
+CREATE PROCEDURE lisafilm
+@nimi varchar(30),
+@pikkus int,
+@rezisoor varchar(30)
+AS
+BEGIN
+INSERT INTO filmid(filNimi, filmPikkus, rezisoor)
+VALUES (@nimi, @pikkus, @rezisoor);
+select * from filmid;
+END;
+
+--kutse
+EXEC lisafilm 'Bob ja Bobek', 120, 'testtest';
+
