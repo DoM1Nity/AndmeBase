@@ -143,3 +143,40 @@ END;
 --kutse
 EXEC lisafilm 'Bob ja Bobek', 120, 'testtest';
 
+--Proceduur, mis kustutab filmi filmiID järgi (DELETE, SELECT)
+CREATE PROCEDURE kustutaFilm
+@id int
+AS
+BEGIN
+SELECT * from filmid;
+DELETE FROM filmid WHERE filmID=@id;
+SELECT * from filmid;
+END;
+
+
+--kutse
+EXEC kustutaFilm 1;
+EXEC kustutaFilm @id=1;
+
+--proceduur, mis uuendab filmiPikkus 5% suurendab
+CREATE PROCEDURE uuendaFilmiPikkus
+AS
+BEGIN
+SELECT * FROM filmid;
+UPDATE filmid SET filmPikkus=filmPikkus*1.05
+SELECT * FROM filmid;
+END
+
+--kutse
+EXEC uuendaFilmiPikkus;
+
+CREATE PROCEDURE uuendaFilmiPikkus2
+@arv decimal(5,2)
+AS
+BEGIN
+SELECT * FROM filmid;
+UPDATE filmid SET filmPikkus=filmPikkus*@arv;
+SELECT * FROM filmid;
+END
+
+EXEC uuendaFilmiPikkus2 @arv=0.10;
