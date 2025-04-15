@@ -180,3 +180,86 @@ SELECT * FROM filmid;
 END
 
 EXEC uuendaFilmiPikkus2 @arv=0.10;
+
+
+
+-------------------------------
+
+-- uus tabeli 15 april
+
+CREATE DATABASE proceduurLOGITpv23;
+
+use proceduurLOGITpv23;
+
+CREATE TABLE filmid(
+filmID int primary key identity(1,1),
+filNimi varchar(30) unique,
+filmPikkus int,
+rezisoor varchar(30)
+);
+
+select * from filmid;
+
+--protseduur, mis näitab filmid esimese tähe järgi
+CREATE PROCEDURE filmdtaht
+@taht char(1)
+AS
+BEGIN 
+SELECT * FROM filmid
+WHERE filNimi LIKE CONCAT(@taht, '%');
+END
+
+--kutse
+EXEC filmdtaht 'M';
+
+--protseduur, mis näitab mis sisaldavad nimes sistatud täht
+CREATE PROCEDURE filmidSisaldabTaht
+@taht char(1)
+AS
+BEGIN 
+SELECT * FROM filmid
+WHERE filNimi LIKE CONCAT('%', @taht, '%');
+END
+
+EXEC filmidSisaldabTaht 'I';
+
+--protseduur, mis näitab mis keskmine filmide pikkus
+CREATE PROCEDURE KeskminePikkus
+AS
+BEGIN 
+SELECT AVG(filmPikkus) as 'Keskmine Pikkus' FROM filmid
+END
+
+DROP PROCEDURE KeskminePikkus
+
+EXEC KeskminePikkus;
+
+-- tabeli struktuuri muutmine
+--KERULINE PROTSEDUUR
+--ALTER TABLE tabelnimi ADD veerg tyyp --- veergu lisamine
+--ALTER TABLE tabelnimi DROP veerg --- veergu kustutamine 
+
+
+CREATE PROCEDURE muudatus
+@tegevus varchar(10),
+@tabelinimi varchar(25),
+@veerunimi varchar(25),
+@tyyp varchar(25) =null
+AS
+BEGIN
+DECLARE @sqltegevus as varchar(max)
+set @sqltegevus=case 
+when @tegevus='add' then concat('ALTER TABLE ', @tabelinimi, ' ADD ', @veerunimi, ' ', @tyyp)
+when @tegevus='drop' then concat('ALTER TABLE ', @tabelinimi, ' DROP COLUMN ', @veerunimi)
+END;
+print @sqltegevus;
+begin 
+EXEC (@sqltegevus);
+END
+END;
+
+select * from filmid;
+--добавление столбца
+EXEC muudatus @tegevus='add', @tabelinimi='filmid', @veerunimi='test', @tyyp='int';
+--удаление столбца
+EXEC muudatus @tegevus='drop', @tabelinimi='filmid', @veerunimi='test';
