@@ -263,3 +263,153 @@ select * from filmid;
 EXEC muudatus @tegevus='add', @tabelinimi='filmid', @veerunimi='test', @tyyp='int';
 --удаление столбца
 EXEC muudatus @tegevus='drop', @tabelinimi='filmid', @veerunimi='test';
+
+
+------------------------------------- SQL
+
+create database autod_DB
+
+use autod_DB;
+
+CREATE TABLE autod (
+    autoID INT PRIMARY KEY IDENTITY(1,1),
+    mudell VARCHAR(20),
+    tüüp VARCHAR(20),
+    aasta INT
+);
+
+CREATE TABLE labisoit (
+    labisoitID INT PRIMARY KEY IDENTITY(1,1),
+    autoID INT,
+    labisoitkm INT,
+    FOREIGN KEY (autoID) REFERENCES autod(autoID)
+);
+
+CREATE TABLE labisoit_log (
+    id INT PRIMARY KEY IDENTITY(1,1),
+    tegevus NVARCHAR(20),
+    andmed NVARCHAR(MAX),
+    kasutaja NVARCHAR(100),
+    aeg DATETIME DEFAULT GETDATE()
+);
+
+
+CREATE TRIGGER trg_labisoit_insert
+ON labisoit
+AFTER INSERT
+AS
+BEGIN
+    INSERT INTO labisoit_log (tegevus, andmed, kasutaja)
+    SELECT 
+        'insert_labisoit',
+        CONCAT('autoID=', autoID, ', labisoitkm=', labisoitkm),
+        SYSTEM_USER
+    FROM inserted;
+END;
+
+DROP TRIGGER trg_labisoit_insert
+
+
+CREATE TRIGGER trg_labisoit_update
+ON labisoit
+AFTER UPDATE
+AS
+BEGIN
+    INSERT INTO labisoit_log (tegevus, andmed, kasutaja)
+    SELECT 
+        'update_labisoit',
+        CONCAT('OLD labisoitkm=', deleted.labisoitkm, ' → NEW labisoitkm=', inserted.labisoitkm),
+        SYSTEM_USER
+    FROM inserted
+    JOIN deleted ON inserted.labisoitID = deleted.labisoitID;
+END;
+
+drop trigger trg_labisoit_update;
+
+CREATE TRIGGER trg_labisoit_delete
+ON labisoit
+AFTER DELETE
+AS
+BEGIN
+    INSERT INTO labisoit_log (tegevus, andmed, kasutaja)
+    SELECT 
+        'delete_labisoit',
+        CONCAT('autoID=', autoID, ', labisoitkm=', labisoitkm),
+        SYSTEM_USER
+    FROM deleted;
+END;
+
+INSERT INTO labisoit (autoID, labisoitkm) VALUES (1, 100000);
+INSERT INTO labisoit (autoID, labisoitkm) VALUES (2, 150000);
+INSERT INTO labisoit (autoID, labisoitkm) VALUES (3, 175000);
+
+
+
+INSERT INTO autod (mudell, tüüp, aasta) VALUES 
+('Audi', 'A4', 2018),
+('BMW', 'X5', 2020),
+('Toyota', 'Corolla', 2016),
+('Honda', 'Civic', 2017),
+('Mercedes', 'E-Class', 2019),
+('Ford', 'Focus', 2015),
+('Volkswagen', 'Passat', 2014),
+('Tesla', 'Model 3', 2021),
+('Škoda', 'Octavia', 2018),
+('Kia', 'Sportage', 2020);
+
+
+SELECT * FROM autod;
+SELECT * FROM labisoit;
+
+CREATE TRIGGER trg_autod_insert
+ON autod
+AFTER INSERT
+AS
+BEGIN
+    INSERT INTO autod_log (tegevus, andmed, kasutaja)
+    SELECT 
+        'insert_autod',
+        CONCAT('mudell=', mudell, ', tüüp=', tüüp, ', aasta=', aasta),
+        SYSTEM_USER
+    FROM inserted;
+END;
+
+CREATE TRIGGER trg_autod_update
+ON autod
+AFTER UPDATE
+AS
+BEGIN
+    INSERT INTO autod_log (tegevus, andmed, kasutaja)
+    SELECT 
+        'update_autod',
+        CONCAT(
+            'OLD: mudell=', d.mudell, ', tüüp=', d.tüüp, ', aasta=', d.aasta,
+            ' → NEW: mudell=', i.mudell, ', tüüp=', i.tüüp, ', aasta=', i.aasta
+        ),
+        SYSTEM_USER
+    FROM inserted i
+    JOIN deleted d ON i.autoID = d.autoID;
+END;
+
+
+CREATE TRIGGER trg_autod_delete
+ON autod
+AFTER DELETE
+AS
+BEGIN
+    INSERT INTO autod_log (tegevus, andmed, kasutaja)
+    SELECT 
+        'delete_autod',
+        CONCAT('mudell=', mudell, ', tüüp=', tüüp, ', aasta=', aasta),
+        SYSTEM_USER
+    FROM deleted;
+END;
+
+
+INSERT INTO autod (mudell, tüüp, aasta) VALUES ('Opel', 'Astra', 2019);
+
+UPDATE autod SET aasta = 2020 WHERE mudell = 'Opel';
+
+DELETE FROM autod WHERE mudell = 'Opel';
+
+SELECT * FROM labisoit_log;
